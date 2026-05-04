@@ -1,11 +1,125 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Yield & Key | California Property Analyzer</title>
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Yield & Key | California Property Analyzer</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Georgia, serif; background: #0d0f14; color: #e8e8e0; min-height: 100vh; padding: 32px 20px; }
+    h1 { text-align: center; font-size: 36px; color: #c8a96e; margin-bottom: 8px; }
+    .sub { text-align: center; color: #7a8299; font-size: 15px; margin-bottom: 40px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; max-width: 1100px; margin: 0 auto 40px; }
+    .card { background: #161a23; border: 1px solid #2a3040; border-radius: 12px; padding: 24px; }
+    .card-title { color: #c8a96e; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 16px; }
+    label { font-size: 12px; color: #7a8299; text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 4px; }
+    input { width: 100%; background: #0d0f14; border: 1px solid #2a3040; border-radius: 8px; padding: 10px 12px; color: #e8e8e0; font-size: 14px; margin-bottom: 14px; }
+    .results { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; max-width: 1100px; margin: 0 auto 32px; }
+    .metric { background: #161a23; border: 1px solid #2a3040; border-radius: 12px; padding: 20px; text-align: center; }
+    .metric-val { font-size: 26px; font-weight: bold; color: #c8a96e; margin-bottom: 6px; }
+    .metric-label { font-size: 12px; color: #7a8299; text-transform: uppercase; letter-spacing: 0.05em; }
+    .note { max-width: 1100px; margin: 0 auto 32px; background: rgba(200,169,110,0.06); border: 1px solid rgba(200,169,110,0.2); border-radius: 12px; padding: 16px 20px; font-size: 13px; color: #7a8299; line-height: 1.6; }
+    .note strong { color: #c8a96e; }
+    .footer { text-align: center; font-size: 12px; color: #7a8299; margin-top: 20px; }
+    .pos { color: #22c55e !important; }
+    .neg { color: #ef4444 !important; }
+  </style>
+</head>
+<body>
+  <h1>⌂ Yield & Key</h1>
+  <p class="sub">California Rental Property Investment Analyzer</p>
+
+  <div class="grid">
+    <div class="card">
+      <div class="card-title">Purchase Details</div>
+      <label>Purchase Price ($)</label>
+      <input type="number" id="purchasePrice" value="550000" oninput="calculate()">
+      <label>Down Payment (%)</label>
+      <input type="number" id="downPaymentPct" value="25" oninput="calculate()">
+      <label>Interest Rate (%)</label>
+      <input type="number" id="interestRate" value="7.25" oninput="calculate()">
+      <label>Loan Term (years)</label>
+      <input type="number" id="loanTermYears" value="30" oninput="calculate()">
+    </div>
+
+    <div class="card">
+      <div class="card-title">Income</div>
+      <label>Monthly Rent ($)</label>
+      <input type="number" id="monthlyRent" value="3200" oninput="calculate()">
+      <label>Vacancy Rate (%)</label>
+      <input type="number" id="vacancyRate" value="5" oninput="calculate()">
+      <div class="card-title" style="margin-top:8px">Growth Assumptions</div>
+      <label>Appreciation Rate (%)</label>
+      <input type="number" id="appreciationRate" value="4" oninput="calculate()">
+      <label>Rent Growth Rate (%)</label>
+      <input type="number" id="rentGrowthRate" value="3" oninput="calculate()">
+    </div>
+
+    <div class="card">
+      <div class="card-title">Expenses</div>
+      <label>Property Tax (%)</label>
+      <input type="number" id="propertyTax" value="1.1" oninput="calculate()">
+      <label>Insurance ($/yr)</label>
+      <input type="number" id="insurance" value="1800" oninput="calculate()">
+      <label>HOA ($/mo)</label>
+      <input type="number" id="hoaMonthly" value="0" oninput="calculate()">
+      <label>Maintenance (%)</label>
+      <input type="number" id="maintenancePct" value="1" oninput="calculate()">
+      <label>Property Mgmt (%)</label>
+      <input type="number" id="propertyMgmtPct" value="8" oninput="calculate()">
+    </div>
+  </div>
+
+  <div class="results">
+    <div class="metric"><div class="metric-val" id="cashFlow">--</div><div class="metric-label">Monthly Cash Flow</div></div>
+    <div class="metric"><div class="metric-val" id="capRate">--</div><div class="metric-label">Cap Rate</div></div>
+    <div class="metric"><div class="metric-val" id="cashOnCash">--</div><div class="metric-label">Cash-on-Cash Return</div></div>
+    <div class="metric"><div class="metric-val" id="dscr">--</div><div class="metric-label">DSCR</div></div>
+    <div class="metric"><div class="metric-val" id="mortgage">--</div><div class="metric-label">Monthly Mortgage</div></div>
+    <div class="metric"><div class="metric-val" id="noi">--</div><div class="metric-label">Annual NOI</div></div>
+  </div>
+
+  <div class="note">
+    <strong>California Investor Note:</strong> Prop 13 resets your assessed value to purchase price at close. Factor in CA income tax on rental income (up to 13.3%) and consult a CPA about depreciation deductions which can significantly improve your after-tax returns.
+  </div>
+
+  <div class="footer">Yield & Key · For informational purposes only · Consult a licensed agent and CPA before investing</div>
+
+  <script>
+    function val(id) { return parseFloat(document.getElementById(id).value) || 0; }
+    function fmt(n) { return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n); }
+    function pct(n) { return n.toFixed(2) + '%'; }
+
+    function calculate() {
+      const price = val('purchasePrice');
+      const down = price * (val('downPaymentPct') / 100);
+      const loan = price - down;
+      const monthlyRate = val('interestRate') / 100 / 12;
+      const n = val('loanTermYears') * 12;
+      const mortgage = loan * (monthlyRate * Math.pow(1 + monthlyRate, n)) / (Math.pow(1 + monthlyRate, n) - 1);
+      const effectiveRent = val('monthlyRent') * (1 - val('vacancyRate') / 100);
+      const annualRent = effectiveRent * 12;
+      const propTax = (price * (val('propertyTax') / 100)) / 12;
+      const insurance = val('insurance') / 12;
+      const maintenance = (price * (val('maintenancePct') / 100)) / 12;
+      const mgmt = effectiveRent * (val('propertyMgmtPct') / 100);
+      const totalExp = (propTax + insurance + val('hoaMonthly') + maintenance + mgmt) * 12;
+      const noi = annualRent - totalExp;
+      const capRate = (noi / price) * 100;
+      const cashFlow = (noi - mortgage * 12) / 12;
+      const cashOnCash = ((cashFlow * 12) / (down + price * 0.025)) * 100;
+      const dscr = noi / (mortgage * 12);
+
+      document.getElementById('cashFlow').textContent = fmt(cashFlow);
+      document.getElementById('cashFlow').className = 'metric-val ' + (cashFlow >= 0 ? 'pos' : 'neg');
+      document.getElementById('capRate').textContent = pct(capRate);
+      document.getElementById('cashOnCash').textContent = pct(cashOnCash);
+      document.getElementById('dscr').textContent = dscr.toFixed(2);
+      document.getElementById('mortgage').textContent = fmt(mortgage);
+      document.getElementById('noi').textContent = fmt(noi);
+    }
+
+    calculate();
+  </script>
+</body>
 </html>
