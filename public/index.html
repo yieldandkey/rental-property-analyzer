@@ -7,27 +7,98 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: Georgia, serif; background: #0d0f14; color: #e8e8e0; min-height: 100vh; padding: 32px 20px; }
-    h1 { text-align: center; font-size: 36px; color: #c8a96e; margin-bottom: 8px; }
-    .sub { text-align: center; color: #7a8299; font-size: 15px; margin-bottom: 40px; }
+    .header { max-width: 1100px; margin: 0 auto 40px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px; }
+    .header-brand h1 { font-size: 32px; color: #c8a96e; margin-bottom: 4px; }
+    .header-brand p { color: #7a8299; font-size: 14px; }
+    .agent-card { background: #161a23; border: 1px solid #2a3040; border-radius: 12px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; }
+    .agent-photo { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; object-position: center top; border: 2px solid #c8a96e; flex-shrink: 0; }
+    .agent-info h3 { font-size: 15px; color: #e8e8e0; margin-bottom: 2px; }
+    .agent-info p { font-size: 12px; color: #7a8299; margin-bottom: 6px; }
+    .agent-links { display: flex; gap: 8px; flex-wrap: wrap; }
+    .agent-link { font-size: 12px; padding: 4px 10px; border-radius: 6px; text-decoration: none; border: 1px solid #2a3040; color: #c8a96e; transition: background 0.2s; }
+    .agent-link:hover { background: #1e2330; }
     .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; max-width: 1100px; margin: 0 auto 40px; }
     .card { background: #161a23; border: 1px solid #2a3040; border-radius: 12px; padding: 24px; }
     .card-title { color: #c8a96e; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 16px; }
     label { font-size: 12px; color: #7a8299; text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 4px; }
     input { width: 100%; background: #0d0f14; border: 1px solid #2a3040; border-radius: 8px; padding: 10px 12px; color: #e8e8e0; font-size: 14px; margin-bottom: 14px; }
+    input:focus { outline: none; border-color: #c8a96e; }
+    .score-banner { max-width: 1100px; margin: 0 auto 28px; background: #161a23; border: 1px solid #2a3040; border-radius: 16px; padding: 24px 32px; display: flex; align-items: center; gap: 28px; flex-wrap: wrap; }
+    .score-ring { width: 80px; height: 80px; border-radius: 50%; border: 3px solid #c8a96e; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; }
+    .score-number { font-size: 26px; font-weight: bold; line-height: 1; }
+    .score-max { font-size: 11px; color: #7a8299; }
+    .score-info h2 { font-size: 20px; margin-bottom: 6px; }
+    .score-info p { color: #7a8299; font-size: 14px; line-height: 1.5; }
     .results { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; max-width: 1100px; margin: 0 auto 32px; }
-    .metric { background: #161a23; border: 1px solid #2a3040; border-radius: 12px; padding: 20px; text-align: center; }
-    .metric-val { font-size: 26px; font-weight: bold; color: #c8a96e; margin-bottom: 6px; }
+    .metric { background: #161a23; border: 1px solid #2a3040; border-radius: 12px; overflow: hidden; }
+    .metric-top { padding: 20px 16px 12px; text-align: center; cursor: pointer; user-select: none; }
+    .metric-top:hover { background: #1e2330; }
+    .metric-val { font-size: 24px; font-weight: bold; color: #c8a96e; margin-bottom: 6px; }
     .metric-label { font-size: 12px; color: #7a8299; text-transform: uppercase; letter-spacing: 0.05em; }
-    .note { max-width: 1100px; margin: 0 auto 32px; background: rgba(200,169,110,0.06); border: 1px solid rgba(200,169,110,0.2); border-radius: 12px; padding: 16px 20px; font-size: 13px; color: #7a8299; line-height: 1.6; }
-    .note strong { color: #c8a96e; }
-    .footer { text-align: center; font-size: 12px; color: #7a8299; margin-top: 20px; }
+    .metric-toggle { font-size: 11px; color: #4a5568; margin-top: 6px; }
+    .metric-expand { display: none; padding: 14px 16px; border-top: 1px solid #2a3040; background: #0d0f14; font-size: 13px; color: #9aa3b0; line-height: 1.6; }
+    .metric-expand.open { display: block; }
+    .metric-expand .formula { background: #161a23; border-radius: 6px; padding: 8px 10px; margin-top: 8px; font-family: monospace; font-size: 12px; color: #c8a96e; }
+    .metric-expand .benchmark { margin-top: 8px; font-size: 12px; }
+    .benchmark span { display: inline-block; padding: 2px 8px; border-radius: 4px; margin-right: 4px; margin-bottom: 4px; }
+    .b-good { background: rgba(34,197,94,0.15); color: #22c55e; }
+    .b-ok { background: rgba(245,158,11,0.15); color: #f59e0b; }
+    .b-bad { background: rgba(239,68,68,0.15); color: #ef4444; }
     .pos { color: #22c55e !important; }
     .neg { color: #ef4444 !important; }
+    .warn { color: #f59e0b !important; }
+    .projection { max-width: 1100px; margin: 0 auto 32px; background: #161a23; border: 1px solid #2a3040; border-radius: 12px; overflow: hidden; }
+    .proj-header { padding: 16px 20px; border-bottom: 1px solid #2a3040; background: #1e2330; }
+    .proj-title { color: #c8a96e; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; }
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: right; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #7a8299; padding: 12px 16px; border-bottom: 1px solid #2a3040; }
+    th:first-child { text-align: left; }
+    td { text-align: right; padding: 12px 16px; font-size: 14px; border-bottom: 1px solid rgba(42,48,64,0.5); color: #e8e8e0; }
+    td:first-child { text-align: left; color: #7a8299; }
+    tr:last-child td { border-bottom: none; }
+    .cta-banner { max-width: 1100px; margin: 0 auto 32px; background: linear-gradient(135deg, #161a23 0%, rgba(200,169,110,0.08) 100%); border: 1px solid rgba(200,169,110,0.3); border-radius: 16px; padding: 28px 32px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px; }
+    .cta-text h3 { font-size: 18px; color: #c8a96e; margin-bottom: 8px; }
+    .cta-text p { color: #7a8299; font-size: 14px; line-height: 1.6; max-width: 500px; }
+    .cta-buttons { display: flex; gap: 12px; flex-wrap: wrap; }
+    .cta-btn { padding: 12px 20px; border-radius: 8px; font-size: 14px; font-family: Georgia, serif; cursor: pointer; text-decoration: none; display: inline-block; transition: all 0.2s; }
+    .cta-btn-primary { background: #c8a96e; color: #0d0f14; border: none; font-weight: bold; }
+    .cta-btn-primary:hover { background: #e8c98a; }
+    .cta-btn-secondary { background: transparent; color: #c8a96e; border: 1px solid #c8a96e; }
+    .cta-btn-secondary:hover { background: rgba(200,169,110,0.1); }
+    .note { max-width: 1100px; margin: 0 auto 32px; background: rgba(200,169,110,0.06); border: 1px solid rgba(200,169,110,0.2); border-radius: 12px; padding: 16px 20px; font-size: 13px; color: #7a8299; line-height: 1.6; }
+    .note strong { color: #c8a96e; }
+    .footer { max-width: 1100px; margin: 0 auto; padding-bottom: 40px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; border-top: 1px solid #2a3040; padding-top: 20px; }
+    .footer-left { font-size: 12px; color: #4a5568; line-height: 1.6; }
+    .footer-right { font-size: 12px; color: #4a5568; text-align: right; }
+    .section-label { max-width: 1100px; margin: 0 auto 12px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; color: #4a5568; }
+    @media (max-width: 600px) {
+      .header { flex-direction: column; }
+      .score-banner { flex-direction: column; text-align: center; }
+      .cta-banner { flex-direction: column; }
+      .footer { flex-direction: column; text-align: center; }
+      .footer-right { text-align: center; }
+    }
   </style>
 </head>
 <body>
-  <h1>⌂ Yield & Key</h1>
-  <p class="sub">California Rental Property Investment Analyzer</p>
+
+  <div class="header">
+    <div class="header-brand">
+      <h1>&#8962; Yield & Key</h1>
+      <p>California Rental Property Investment Analyzer</p>
+    </div>
+    <div class="agent-card">
+      <img src="/Cierra.JPG" alt="Cierra Chaves" class="agent-photo" />
+      <div class="agent-info">
+        <h3>Cierra Chaves</h3>
+        <p>REALTOR&reg; &middot; Grounded Real Estate &middot; Sacramento, CA</p>
+        <div class="agent-links">
+          <a class="agent-link" href="mailto:cierra@grounded.city">&#9993; Email Me</a>
+          <a class="agent-link" href="https://instagram.com/homeswithcierra" target="_blank">&#9654; @HomeswithCierra</a>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div class="grid">
     <div class="card">
@@ -40,8 +111,9 @@
       <input type="number" id="interestRate" value="7.25" oninput="calculate()">
       <label>Loan Term (years)</label>
       <input type="number" id="loanTermYears" value="30" oninput="calculate()">
+      <label>Closing Costs (%)</label>
+      <input type="number" id="closingCostsPct" value="2.5" oninput="calculate()">
     </div>
-
     <div class="card">
       <div class="card-title">Income</div>
       <label>Monthly Rent ($)</label>
@@ -54,69 +126,329 @@
       <label>Rent Growth Rate (%)</label>
       <input type="number" id="rentGrowthRate" value="3" oninput="calculate()">
     </div>
-
     <div class="card">
       <div class="card-title">Expenses</div>
-      <label>Property Tax (%)</label>
+      <label>Property Tax (%) — CA Prop 13 base: 1.1%</label>
       <input type="number" id="propertyTax" value="1.1" oninput="calculate()">
       <label>Insurance ($/yr)</label>
       <input type="number" id="insurance" value="1800" oninput="calculate()">
       <label>HOA ($/mo)</label>
       <input type="number" id="hoaMonthly" value="0" oninput="calculate()">
-      <label>Maintenance (%)</label>
+      <label>Maintenance (% of value/yr)</label>
       <input type="number" id="maintenancePct" value="1" oninput="calculate()">
-      <label>Property Mgmt (%)</label>
+      <label>Property Mgmt (% of rent)</label>
       <input type="number" id="propertyMgmtPct" value="8" oninput="calculate()">
     </div>
   </div>
 
+  <div class="score-banner">
+    <div class="score-ring" id="scoreRing">
+      <span class="score-number" id="scoreNum">--</span>
+      <span class="score-max">/100</span>
+    </div>
+    <div class="score-info">
+      <h2 id="scoreLabel">Analyzing...</h2>
+      <p id="scoreDesc">Adjust inputs above to analyze this property.</p>
+    </div>
+  </div>
+
+  <div class="section-label">Key Metrics — tap each to learn more</div>
   <div class="results">
-    <div class="metric"><div class="metric-val" id="cashFlow">--</div><div class="metric-label">Monthly Cash Flow</div></div>
-    <div class="metric"><div class="metric-val" id="capRate">--</div><div class="metric-label">Cap Rate</div></div>
-    <div class="metric"><div class="metric-val" id="cashOnCash">--</div><div class="metric-label">Cash-on-Cash Return</div></div>
-    <div class="metric"><div class="metric-val" id="dscr">--</div><div class="metric-label">DSCR</div></div>
-    <div class="metric"><div class="metric-val" id="mortgage">--</div><div class="metric-label">Monthly Mortgage</div></div>
-    <div class="metric"><div class="metric-val" id="noi">--</div><div class="metric-label">Annual NOI</div></div>
+
+    <div class="metric">
+      <div class="metric-top" onclick="toggle('exp-cf')">
+        <div class="metric-val" id="cashFlow">--</div>
+        <div class="metric-label">Monthly Cash Flow</div>
+        <div class="metric-toggle">&#9660; What does this mean?</div>
+      </div>
+      <div class="metric-expand" id="exp-cf">
+        The money left over each month after collecting rent and paying every expense including your mortgage, taxes, insurance, maintenance, and property management.
+        <div class="formula">Cash Flow = Effective Rent − All Expenses − Mortgage</div>
+        <div class="benchmark">
+          <span class="b-good">&#10003; Positive = good</span>
+          <span class="b-ok">$0 = break even</span>
+          <span class="b-bad">Negative = losing money monthly</span>
+        </div>
+        CA tip: Many Sacramento properties have negative cash flow today due to high prices and rates. Appreciation may still make it worth it long term.
+      </div>
+    </div>
+
+    <div class="metric">
+      <div class="metric-top" onclick="toggle('exp-cap')">
+        <div class="metric-val" id="capRate">--</div>
+        <div class="metric-label">Cap Rate</div>
+        <div class="metric-toggle">&#9660; What does this mean?</div>
+      </div>
+      <div class="metric-expand" id="exp-cap">
+        Measures a property's income potential independent of financing — what it earns as if you paid all cash.
+        <div class="formula">Cap Rate = Net Operating Income ÷ Purchase Price × 100</div>
+        <div class="benchmark">
+          <span class="b-good">&#10003; 6%+ Strong</span>
+          <span class="b-ok">4–6% Moderate</span>
+          <span class="b-bad">Below 4% Weak</span>
+        </div>
+        CA tip: Sacramento cap rates typically run 4–6%. Coastal CA markets often run 2–4%.
+      </div>
+    </div>
+
+    <div class="metric">
+      <div class="metric-top" onclick="toggle('exp-coc')">
+        <div class="metric-val" id="cashOnCash">--</div>
+        <div class="metric-label">Cash-on-Cash Return</div>
+        <div class="metric-toggle">&#9660; What does this mean?</div>
+      </div>
+      <div class="metric-expand" id="exp-coc">
+        How much annual cash income you earn relative to the actual cash you invested. The most relevant return metric for leveraged investors.
+        <div class="formula">CoC = Annual Cash Flow ÷ Total Cash Invested × 100</div>
+        <div class="benchmark">
+          <span class="b-good">&#10003; 8%+ Strong</span>
+          <span class="b-ok">4–8% Moderate</span>
+          <span class="b-bad">Below 4% Weak</span>
+        </div>
+        8% CoC means for every $100K invested, you earn $8K/yr in cash.
+      </div>
+    </div>
+
+    <div class="metric">
+      <div class="metric-top" onclick="toggle('exp-dscr')">
+        <div class="metric-val" id="dscr">--</div>
+        <div class="metric-label">DSCR</div>
+        <div class="metric-toggle">&#9660; What does this mean?</div>
+      </div>
+      <div class="metric-expand" id="exp-dscr">
+        Debt Service Coverage Ratio — the ratio of your property's income to its debt payments. Lenders use this to qualify investment property loans.
+        <div class="formula">DSCR = Net Operating Income ÷ Annual Mortgage Payments</div>
+        <div class="benchmark">
+          <span class="b-good">&#10003; 1.25+ Lender approved</span>
+          <span class="b-ok">1.0–1.25 Tight</span>
+          <span class="b-bad">Below 1.0 Won't qualify</span>
+        </div>
+        Most CA lenders require DSCR of 1.20–1.25 for investment property loans.
+      </div>
+    </div>
+
+    <div class="metric">
+      <div class="metric-top" onclick="toggle('exp-mort')">
+        <div class="metric-val" id="mortgage">--</div>
+        <div class="metric-label">Monthly Mortgage</div>
+        <div class="metric-toggle">&#9660; What does this mean?</div>
+      </div>
+      <div class="metric-expand" id="exp-mort">
+        Your principal and interest payment each month. Does not include taxes, insurance, or HOA.
+        <div class="formula">P&amp;I = Loan × [r(1+r)^n] ÷ [(1+r)^n − 1]</div>
+        <div class="benchmark">
+          <span class="b-good">&#10003; Under 40% of rent = healthy</span>
+          <span class="b-bad">Over 60% of rent = cash flow risk</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="metric">
+      <div class="metric-top" onclick="toggle('exp-noi')">
+        <div class="metric-val" id="noi">--</div>
+        <div class="metric-label">Annual NOI</div>
+        <div class="metric-toggle">&#9660; What does this mean?</div>
+      </div>
+      <div class="metric-expand" id="exp-noi">
+        Net Operating Income — your annual income after all operating expenses, but before mortgage payments. The core profitability number used by investors and appraisers.
+        <div class="formula">NOI = Effective Gross Income − Operating Expenses</div>
+        Operating expenses include taxes, insurance, HOA, maintenance, and management — but NOT the mortgage.
+      </div>
+    </div>
+
+    <div class="metric">
+      <div class="metric-top" onclick="toggle('exp-grm')">
+        <div class="metric-val" id="grm">--</div>
+        <div class="metric-label">Gross Rent Multiplier</div>
+        <div class="metric-toggle">&#9660; What does this mean?</div>
+      </div>
+      <div class="metric-expand" id="exp-grm">
+        How many years of gross rent it takes to pay for the property. Lower is better.
+        <div class="formula">GRM = Purchase Price ÷ Annual Gross Rent</div>
+        <div class="benchmark">
+          <span class="b-good">&#10003; Under 15 = strong value</span>
+          <span class="b-ok">15–20 = moderate</span>
+          <span class="b-bad">Over 20 = pricey</span>
+        </div>
+        Sacramento GRMs typically run 14–18. Bay Area can exceed 25.
+      </div>
+    </div>
+
+    <div class="metric">
+      <div class="metric-top" onclick="toggle('exp-eq')">
+        <div class="metric-val" id="totalCash">--</div>
+        <div class="metric-label">Total Cash In</div>
+        <div class="metric-toggle">&#9660; What does this mean?</div>
+      </div>
+      <div class="metric-expand" id="exp-eq">
+        The total cash you need at closing — your down payment plus estimated closing costs.
+        <div class="formula">Total Cash = Down Payment + Closing Costs</div>
+        CA closing costs typically run 2–3% for buyers. Includes title, escrow, lender fees, and prepaid items.
+      </div>
+    </div>
+
+  </div>
+
+  <div class="section-label">5-Year Investment Projection</div>
+  <div class="projection">
+    <div class="proj-header">
+      <div class="proj-title">Projected growth based on your appreciation and rent growth assumptions</div>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Year</th>
+          <th>Property Value</th>
+          <th>Annual Rent</th>
+          <th>Annual Cash Flow</th>
+          <th>Est. Equity</th>
+        </tr>
+      </thead>
+      <tbody id="projBody"></tbody>
+    </table>
+  </div>
+
+  <div class="cta-banner">
+    <div class="cta-text">
+      <h3>Ready to analyze a real property?</h3>
+      <p>I'm a Sacramento-based REALTOR® with a finance background. I built this tool because investors deserve real numbers, not guesswork. DM me or send an email and let's run the numbers on a specific property together.</p>
+    </div>
+    <div class="cta-buttons">
+      <a class="cta-btn cta-btn-primary" href="mailto:cierra@grounded.city">Send an Email</a>
+      <a class="cta-btn cta-btn-secondary" href="https://instagram.com/homeswithcierra" target="_blank">DM on Instagram</a>
+    </div>
   </div>
 
   <div class="note">
-    <strong>California Investor Note:</strong> Prop 13 resets your assessed value to purchase price at close. Factor in CA income tax on rental income (up to 13.3%) and consult a CPA about depreciation deductions which can significantly improve your after-tax returns.
+    <strong>California Investor Note:</strong> Prop 13 resets your assessed value to purchase price at close — your property tax base is locked and can only increase 2%/yr afterward. Factor in <strong>CA income tax on rental income</strong> (up to 13.3%) and consult a CPA about <strong>depreciation deductions</strong> which can significantly reduce your taxable income and improve after-tax returns.
   </div>
 
-  <div class="footer">Yield & Key · For informational purposes only · Consult a licensed agent and CPA before investing</div>
+  <div class="footer">
+    <div class="footer-left">
+      &copy; 2026 Yield & Key &middot; Built by Cierra Chaves<br>
+      REALTOR&reg; &middot; Grounded Real Estate &middot; Sacramento, CA<br>
+      CA DRE #02416256
+    </div>
+    <div class="footer-right">
+      For informational purposes only.<br>
+      Consult a licensed agent and CPA before investing.<br>
+      <a href="mailto:cierra@grounded.city" style="color: #c8a96e; text-decoration: none;">cierra@grounded.city</a>
+    </div>
+  </div>
 
   <script>
     function val(id) { return parseFloat(document.getElementById(id).value) || 0; }
     function fmt(n) { return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n); }
     function pct(n) { return n.toFixed(2) + '%'; }
+    function toggle(id) { document.getElementById(id).classList.toggle('open'); }
+
+    function colorVal(elId, value, goodAbove, warnAbove) {
+      const el = document.getElementById(elId);
+      el.classList.remove('pos', 'neg', 'warn');
+      if (value >= goodAbove) el.classList.add('pos');
+      else if (value >= warnAbove) el.classList.add('warn');
+      else el.classList.add('neg');
+    }
 
     function calculate() {
       const price = val('purchasePrice');
       const down = price * (val('downPaymentPct') / 100);
+      const closing = price * (val('closingCostsPct') / 100);
+      const totalCashIn = down + closing;
       const loan = price - down;
       const monthlyRate = val('interestRate') / 100 / 12;
       const n = val('loanTermYears') * 12;
-      const mortgage = loan * (monthlyRate * Math.pow(1 + monthlyRate, n)) / (Math.pow(1 + monthlyRate, n) - 1);
+      const mortgage = monthlyRate > 0 ? loan * (monthlyRate * Math.pow(1 + monthlyRate, n)) / (Math.pow(1 + monthlyRate, n) - 1) : loan / n;
       const effectiveRent = val('monthlyRent') * (1 - val('vacancyRate') / 100);
       const annualRent = effectiveRent * 12;
+      const grossRent = val('monthlyRent') * 12;
       const propTax = (price * (val('propertyTax') / 100)) / 12;
       const insurance = val('insurance') / 12;
       const maintenance = (price * (val('maintenancePct') / 100)) / 12;
       const mgmt = effectiveRent * (val('propertyMgmtPct') / 100);
-      const totalExp = (propTax + insurance + val('hoaMonthly') + maintenance + mgmt) * 12;
-      const noi = annualRent - totalExp;
-      const capRate = (noi / price) * 100;
-      const cashFlow = (noi - mortgage * 12) / 12;
-      const cashOnCash = ((cashFlow * 12) / (down + price * 0.025)) * 100;
-      const dscr = noi / (mortgage * 12);
+      const totalExpAnnual = (propTax + insurance + val('hoaMonthly') + maintenance + mgmt) * 12;
+      const noi = annualRent - totalExpAnnual;
+      const capRate = price > 0 ? (noi / price) * 100 : 0;
+      const cashFlowAnnual = noi - mortgage * 12;
+      const cashFlowMonthly = cashFlowAnnual / 12;
+      const cashOnCash = totalCashIn > 0 ? (cashFlowAnnual / totalCashIn) * 100 : 0;
+      const dscr = mortgage > 0 ? noi / (mortgage * 12) : 0;
+      const grm = grossRent > 0 ? price / grossRent : 0;
 
-      document.getElementById('cashFlow').textContent = fmt(cashFlow);
-      document.getElementById('cashFlow').className = 'metric-val ' + (cashFlow >= 0 ? 'pos' : 'neg');
+      document.getElementById('cashFlow').textContent = fmt(cashFlowMonthly);
       document.getElementById('capRate').textContent = pct(capRate);
       document.getElementById('cashOnCash').textContent = pct(cashOnCash);
       document.getElementById('dscr').textContent = dscr.toFixed(2);
       document.getElementById('mortgage').textContent = fmt(mortgage);
       document.getElementById('noi').textContent = fmt(noi);
+      document.getElementById('grm').textContent = grm.toFixed(1) + 'x';
+      document.getElementById('totalCash').textContent = fmt(totalCashIn);
+
+      const cfEl = document.getElementById('cashFlow');
+      cfEl.classList.remove('pos', 'neg', 'warn');
+      if (cashFlowMonthly >= 200) cfEl.classList.add('pos');
+      else if (cashFlowMonthly >= 0) cfEl.classList.add('warn');
+      else cfEl.classList.add('neg');
+
+      colorVal('capRate', capRate, 6, 4);
+      colorVal('cashOnCash', cashOnCash, 8, 4);
+      colorVal('dscr', dscr, 1.25, 1.0);
+
+      const grmEl = document.getElementById('grm');
+      grmEl.classList.remove('pos', 'neg', 'warn');
+      if (grm <= 15) grmEl.classList.add('pos');
+      else if (grm <= 20) grmEl.classList.add('warn');
+      else grmEl.classList.add('neg');
+
+      const score = Math.min(100, Math.max(0,
+        (capRate >= 6 ? 25 : capRate >= 4 ? 15 : 5) +
+        (cashOnCash >= 8 ? 25 : cashOnCash >= 4 ? 15 : cashOnCash >= 0 ? 8 : 0) +
+        (dscr >= 1.25 ? 25 : dscr >= 1.0 ? 15 : 5) +
+        (grm <= 15 ? 25 : grm <= 20 ? 15 : 5)
+      ));
+
+      const scoreEl = document.getElementById('scoreNum');
+      const ringEl = document.getElementById('scoreRing');
+      const labelEl = document.getElementById('scoreLabel');
+      const descEl = document.getElementById('scoreDesc');
+      scoreEl.textContent = Math.round(score);
+
+      let color, label, desc;
+      if (score >= 75) {
+        color = '#22c55e'; label = 'Strong Deal';
+        desc = 'This property scores well across cap rate, cash flow, DSCR, and value. Worth serious consideration.';
+      } else if (score >= 50) {
+        color = '#f59e0b'; label = 'Moderate Deal';
+        desc = 'This property has some strengths but also weaknesses. Consider negotiating price or increasing rent.';
+      } else {
+        color = '#ef4444'; label = 'Needs Review';
+        desc = 'The numbers are challenging at this price and rent level. Try adjusting the purchase price or rental income.';
+      }
+
+      scoreEl.style.color = color;
+      ringEl.style.borderColor = color;
+      labelEl.style.color = color;
+      labelEl.textContent = label;
+      descEl.textContent = desc;
+
+      const appRate = val('appreciationRate') / 100;
+      const rentGrowth = val('rentGrowthRate') / 100;
+      let tbody = '';
+      for (let yr = 1; yr <= 5; yr++) {
+        const projValue = price * Math.pow(1 + appRate, yr);
+        const projRent = val('monthlyRent') * Math.pow(1 + rentGrowth, yr) * 12 * (1 - val('vacancyRate') / 100);
+        const projCF = (projRent - totalExpAnnual) - mortgage * 12;
+        const projEquity = projValue - loan;
+        const cfClass = projCF >= 0 ? 'pos' : 'neg';
+        tbody += `<tr>
+          <td>Year ${yr}</td>
+          <td>${fmt(projValue)}</td>
+          <td>${fmt(projRent)}</td>
+          <td class="${cfClass}">${fmt(projCF)}</td>
+          <td>${fmt(projEquity)}</td>
+        </tr>`;
+      }
+      document.getElementById('projBody').innerHTML = tbody;
     }
 
     calculate();
