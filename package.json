@@ -2,6 +2,6 @@
   "name": "rental-property-analyzer",
   "version": "1.0.0",
   "scripts": {
-    "build": "echo 'No build needed'"
+    "build": "echo done"
   }
 }
